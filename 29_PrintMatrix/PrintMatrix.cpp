@@ -14,7 +14,7 @@ https://github.com/zhedahht/CodingInterviewChinese2/blob/master/LICENSE.txt)
 
 // 面试题29：顺时针打印矩阵
 // 题目：输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字。
-
+#include <stdlib.h>
 #include <cstdio>
 
 void PrintMatrixInCircle(int** numbers, int columns, int rows, int start);
@@ -27,7 +27,7 @@ void PrintMatrixClockwisely(int** numbers, int columns, int rows)
 
     int start = 0;
 
-    while(columns > start * 2 && rows > start * 2)
+    while(columns > start << 1 && rows > start << 1)
     {
         PrintMatrixInCircle(numbers, columns, rows, start);
 
@@ -202,6 +202,7 @@ int main(int argc, char* argv[])
     */
     Test(5, 4);
 
+	system("pause");
     return 0;
 }
 

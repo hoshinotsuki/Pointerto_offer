@@ -17,43 +17,105 @@ https://github.com/zhedahht/CodingInterviewChinese2/blob/master/LICENSE.txt)
 // 结点。
 
 #include <cstdio>
+#include <stdlib.h>
 #include "..\Utilities\List.h"
 
+//void DeleteNode(ListNode** pListHead, ListNode* pToBeDeleted)
+//{
+//    if(!pListHead || !pToBeDeleted)
+//        return;
+//
+//    // 要删除的结点不是尾结点
+//    if(pToBeDeleted->m_pNext != nullptr)
+//    {
+//        ListNode* pNext = pToBeDeleted->m_pNext;
+//        pToBeDeleted->m_nValue = pNext->m_nValue;
+//        pToBeDeleted->m_pNext = pNext->m_pNext;
+// 
+//        delete pNext;
+//        pNext = nullptr;
+//    }
+//    // 链表只有一个结点，删除头结点（也是尾结点）
+//    else if(*pListHead == pToBeDeleted)
+//    {
+//        delete pToBeDeleted;
+//        pToBeDeleted = nullptr;
+//        *pListHead = nullptr;
+//    }
+//    // 链表中有多个结点，删除尾结点
+//    else
+//    {
+//        ListNode* pNode = *pListHead;
+//        while(pNode->m_pNext != pToBeDeleted)
+//        {
+//            pNode = pNode->m_pNext;            
+//        }
+// 
+//        pNode->m_pNext = nullptr;
+//        delete pToBeDeleted;
+//        pToBeDeleted = nullptr;
+//    }
+//}
+
+//已知该节点存在链表中
 void DeleteNode(ListNode** pListHead, ListNode* pToBeDeleted)
 {
-    if(!pListHead || !pToBeDeleted)
-        return;
+	//1.如果链表头节点或待删除节点为空，返回
+	if (!pListHead || !pToBeDeleted)
+		return;
+	//2.多个节点的链表，前n-1个非尾节点
+	if (pToBeDeleted->m_pNext)
+	{
+		//2.1 pNext：待删除节点J的下个节点K
+		ListNode* pNext = pToBeDeleted->m_pNext;
+		//2.2 复制值J=K
+		pToBeDeleted->m_nValue = pNext->m_nValue;
+		//2.3 复制指针J->NEXT=K->NEXT
+		pToBeDeleted->m_pNext = pNext->m_pNext;
 
-    // 要删除的结点不是尾结点
-    if(pToBeDeleted->m_pNext != nullptr)
-    {
-        ListNode* pNext = pToBeDeleted->m_pNext;
-        pToBeDeleted->m_nValue = pNext->m_nValue;
-        pToBeDeleted->m_pNext = pNext->m_pNext;
- 
-        delete pNext;
-        pNext = nullptr;
-    }
-    // 链表只有一个结点，删除头结点（也是尾结点）
-    else if(*pListHead == pToBeDeleted)
-    {
-        delete pToBeDeleted;
-        pToBeDeleted = nullptr;
-        *pListHead = nullptr;
-    }
-    // 链表中有多个结点，删除尾结点
-    else
-    {
-        ListNode* pNode = *pListHead;
-        while(pNode->m_pNext != pToBeDeleted)
-        {
-            pNode = pNode->m_pNext;            
-        }
- 
-        pNode->m_pNext = nullptr;
-        delete pToBeDeleted;
-        pToBeDeleted = nullptr;
-    }
+		//2.4 删去下个节点K(pNext)
+		delete pNext;
+
+		//2.5 pNext设为空指针
+		pNext = nullptr;
+
+	}
+
+	//3.只有一个节点的链表，删完要将头节点指针设为空
+	else if(*pListHead==pToBeDeleted)
+	{
+		//3.1删除节点
+		delete pToBeDeleted; 
+
+		//3.2 释放删除节点的指针
+		pToBeDeleted = nullptr;
+
+		//3.3 删除后将头节点设为空指针
+		*pListHead = nullptr;
+
+	}
+	//4.如果是最后一个尾节点，就用遍历
+	else
+	{
+		//4.1 pNode：遍历指针,从头开始
+		ListNode* pNode = *pListHead;
+		//4.2 while遍历找到pNode的下一个节点是要删除的节点
+		while(pNode->m_pNext == pToBeDeleted)
+		{ 
+			//4.2.1 指针向后指
+			pNode = pNode->m_pNext; 
+		}
+		//4.3 将pNode的下一个节点设为空
+		pNode->m_pNext = nullptr;
+
+		//4.4 删除最后的节点
+		delete pToBeDeleted;
+		//4.5 释放指针 
+		pToBeDeleted = nullptr; 
+
+	}
+
+
 }
 
 // ====================测试代码====================
@@ -149,7 +211,7 @@ int main(int argc, char* argv[])
     Test3();
     Test4();
     Test5();
-
+	system("pause");
     return 0;
 }
 

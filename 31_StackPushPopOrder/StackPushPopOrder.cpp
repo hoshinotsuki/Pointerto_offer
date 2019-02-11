@@ -20,6 +20,7 @@ https://github.com/zhedahht/CodingInterviewChinese2/blob/master/LICENSE.txt)
 
 #include <cstdio>
 #include <stack>
+#include <stdlib.h>
 
 bool IsPopOrder(const int* pPush, const int* pPop, int nLength)
 {
@@ -142,7 +143,7 @@ int main(int argc, char* argv[])
     Test5();
     Test6();
     Test7();
-
+	system("pause");
     return 0;
 }
 

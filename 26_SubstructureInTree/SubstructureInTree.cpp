@@ -16,6 +16,7 @@ https://github.com/zhedahht/CodingInterviewChinese2/blob/master/LICENSE.txt)
 // 题目：输入两棵二叉树A和B，判断B是不是A的子结构。
 
 #include <cstdio>
+#include <stdlib.h>
 
 struct BinaryTreeNode
 {
@@ -26,45 +27,98 @@ struct BinaryTreeNode
 
 bool DoesTree1HaveTree2(BinaryTreeNode* pRoot1, BinaryTreeNode* pRoot2);
 bool Equal(double num1, double num2);
+//
+//bool HasSubtree(BinaryTreeNode* pRoot1, BinaryTreeNode* pRoot2)
+//{
+//    bool result = false;
+//
+//    if(pRoot1 != nullptr && pRoot2 != nullptr)
+//    {
+//        if(Equal(pRoot1->m_dbValue, pRoot2->m_dbValue))
+//            result = DoesTree1HaveTree2(pRoot1, pRoot2);
+//        if(!result)
+//            result = HasSubtree(pRoot1->m_pLeft, pRoot2);
+//        if(!result)
+//            result = HasSubtree(pRoot1->m_pRight, pRoot2);
+//    }
+//
+//    return result;
+//}
+//
+//bool DoesTree1HaveTree2(BinaryTreeNode* pRoot1, BinaryTreeNode* pRoot2)
+//{
+//    if(pRoot2 == nullptr)
+//        return true;
+//
+//    if(pRoot1 == nullptr)
+//        return false;
+//
+//    if(!Equal(pRoot1->m_dbValue, pRoot2->m_dbValue))
+//        return false;
+//
+//    return DoesTree1HaveTree2(pRoot1->m_pLeft, pRoot2->m_pLeft) &&
+//        DoesTree1HaveTree2(pRoot1->m_pRight, pRoot2->m_pRight);
+//}
 
-bool HasSubtree(BinaryTreeNode* pRoot1, BinaryTreeNode* pRoot2)
-{
-    bool result = false;
+//bool Equal(double num1, double num2)
+//{
+//    if((num1 - num2 > -0.0000001) && (num1 - num2 < 0.0000001))
+//        return true;
+//    else
+//        return false;
+//}
 
-    if(pRoot1 != nullptr && pRoot2 != nullptr)
-    {
-        if(Equal(pRoot1->m_dbValue, pRoot2->m_dbValue))
-            result = DoesTree1HaveTree2(pRoot1, pRoot2);
-        if(!result)
-            result = HasSubtree(pRoot1->m_pLeft, pRoot2);
-        if(!result)
-            result = HasSubtree(pRoot1->m_pRight, pRoot2);
-    }
-
-    return result;
+//对于float和double型的小数，无法直接比较大小，判断这两个数相等的做法是：两数之差的绝对值在一个很小的范围内，0.0000001
+bool Equal(double num1, double num2)
+{ 
+	return ((num1 - num2) > -0.000000001 && (num1 - num2) < 0.00000001) ? true : false; 
 }
 
+//递归检查根节点下的子树是否结构一样
 bool DoesTree1HaveTree2(BinaryTreeNode* pRoot1, BinaryTreeNode* pRoot2)
 {
-    if(pRoot2 == nullptr)
-        return true;
 
-    if(pRoot1 == nullptr)
-        return false;
+	//技巧2：递归结束条件：大树为空，说明已经遍历完了，说明存在；子树为空，就返回假
 
-    if(!Equal(pRoot1->m_dbValue, pRoot2->m_dbValue))
-        return false;
+	//1.如果B子树为空，返回真，说明已经遍历完子树了
+	if (!pRoot2)
+		return true;
 
-    return DoesTree1HaveTree2(pRoot1->m_pLeft, pRoot2->m_pLeft) &&
-        DoesTree1HaveTree2(pRoot1->m_pRight, pRoot2->m_pRight);
+	//2.如果A子树为空，返回假，说明不匹配 
+	if (!pRoot1)
+		return false;
+
+
+	//3.如果两个节点不相同，返回假，说明不匹配 
+	if (!Equal(pRoot1->m_dbValue, pRoot2->m_dbValue))
+		return false;
+
+	//4.返回递归调用，各自的左节点和各自的右节点递归
+	return DoesTree1HaveTree2(pRoot1->m_pLeft, pRoot2->m_pLeft) && DoesTree1HaveTree2(pRoot1->m_pRight, pRoot2->m_pRight);
+	 
 }
 
-bool Equal(double num1, double num2)
+//是否为子树
+bool HasSubtree(BinaryTreeNode* pRoot1, BinaryTreeNode* pRoot2)
 {
-    if((num1 - num2 > -0.0000001) && (num1 - num2 < 0.0000001))
-        return true;
-    else
-        return false;
+	//1.如果有空树，返回假
+	if (!pRoot1 || !pRoot2)
+		return false;
+
+	//2.默认返回结果为假
+	bool result = false;
+	
+	//3.如果两个根节点相同就判断第二步
+	if (Equal( pRoot1->m_dbValue,pRoot2->m_dbValue))//技巧1:小数用定义的函数判断，不用==判断相等。
+		result = DoesTree1HaveTree2(pRoot1, pRoot2);
+	if (!result)
+		//如果不相同，就往左遍历，直到找到第一个相同的根节点
+		result = HasSubtree(pRoot1->m_pLeft, pRoot2);
+	if (!result)//如果不相同，就往右遍历，直到找到第一个相同的根节点
+		result = HasSubtree(pRoot1->m_pRight, pRoot2);
+
+	//4.返回结果
+	return result;
 }
 
 // ====================辅助测试代码====================
@@ -362,6 +416,45 @@ void Test9()
     Test("Test9", nullptr, nullptr, false);
 }
 
+//[3, 4, 5, 1, 2, null, null, 0]
+//[4, 1, 2]
+//			  3
+//			/	\
+//		  4		 5
+//		 / \
+//		1	2
+//	   /
+//	  0
+
+
+void Test10()
+{
+
+	BinaryTreeNode* pNodeA1 = CreateBinaryTreeNode(8);
+	BinaryTreeNode* pNodeA2 = CreateBinaryTreeNode(8);
+	BinaryTreeNode* pNodeA3 = CreateBinaryTreeNode(7);
+	BinaryTreeNode* pNodeA4 = CreateBinaryTreeNode(9);
+	BinaryTreeNode* pNodeA5 = CreateBinaryTreeNode(2);
+	BinaryTreeNode* pNodeA6 = CreateBinaryTreeNode(4);
+	BinaryTreeNode* pNodeA7 = CreateBinaryTreeNode(7);
+
+	ConnectTreeNodes(pNodeA1, pNodeA2, pNodeA3);
+	ConnectTreeNodes(pNodeA2, pNodeA4, pNodeA5);
+	ConnectTreeNodes(pNodeA5, pNodeA6, pNodeA7);
+
+	BinaryTreeNode* pNodeB1 = CreateBinaryTreeNode(8);
+	BinaryTreeNode* pNodeB2 = CreateBinaryTreeNode(9);
+	BinaryTreeNode* pNodeB3 = CreateBinaryTreeNode(2);
+
+	ConnectTreeNodes(pNodeB1, pNodeB2, pNodeB3);
+
+	Test("Test1", pNodeA1, pNodeB1, true);
+
+	DestroyTree(pNodeA1);
+	DestroyTree(pNodeB1);
+}
+
+
 int main(int argc, char* argv[])
 {
     Test1();
@@ -373,7 +466,7 @@ int main(int argc, char* argv[])
     Test7();
     Test8();
     Test9();
-
+	system("pause");
     return 0;
 }
 

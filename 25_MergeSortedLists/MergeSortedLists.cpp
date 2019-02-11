@@ -18,31 +18,63 @@ https://github.com/zhedahht/CodingInterviewChinese2/blob/master/LICENSE.txt)
 // 表3所示。
 
 #include <cstdio>
+#include <stdlib.h>
 #include "..\Utilities\List.h"
+
+//ListNode* Merge(ListNode* pHead1, ListNode* pHead2)
+//{
+//    if(pHead1 == nullptr)
+//        return pHead2;
+//    else if(pHead2 == nullptr)
+//        return pHead1;
+//
+//    ListNode* pMergedHead = nullptr;
+//
+//    if(pHead1->m_nValue < pHead2->m_nValue)
+//    {
+//        pMergedHead = pHead1;
+//        pMergedHead->m_pNext = Merge(pHead1->m_pNext, pHead2);
+//    }
+//    else
+//    {
+//        pMergedHead = pHead2;
+//        pMergedHead->m_pNext = Merge(pHead1, pHead2->m_pNext);
+//    }
+//
+//    return pMergedHead;
+//}
+
 
 ListNode* Merge(ListNode* pHead1, ListNode* pHead2)
 {
-    if(pHead1 == nullptr)
-        return pHead2;
-    else if(pHead2 == nullptr)
-        return pHead1;
+	//1.如果有一个是空链表，返回另外一个
+	if (!pHead1)
+		return pHead2;
+	else if (!pHead2)
+		return pHead1;
 
-    ListNode* pMergedHead = nullptr;
+	//2.定义新链表的头指针
+	ListNode* MergeNode = nullptr;
 
-    if(pHead1->m_nValue < pHead2->m_nValue)
-    {
-        pMergedHead = pHead1;
-        pMergedHead->m_pNext = Merge(pHead1->m_pNext, pHead2);
-    }
-    else
-    {
-        pMergedHead = pHead2;
-        pMergedHead->m_pNext = Merge(pHead1, pHead2->m_pNext);
-    }
+	//3.比较两个链表的头节点大小，进行递归
+	if (pHead1->m_nValue <  pHead2->m_nValue)
+	{
+		//3.1如果链表1的节点小，拿出来,MergeNode->m_pNext进行递归
+		MergeNode = pHead1;
+		MergeNode->m_pNext = Merge(pHead1->m_pNext, pHead2);
 
-    return pMergedHead;
+	}
+	else
+	{
+		//3.2如果链表2的节点小，拿出来
+		MergeNode = pHead2;
+		MergeNode->m_pNext = Merge(pHead1, pHead2->m_pNext);
+
+	}
+
+	//4.返回合并后的链表头指针
+	return MergeNode;
 }
-
 // ====================测试代码====================
 ListNode* Test(char* testName, ListNode* pHead1, ListNode* pHead2)
 {
@@ -64,90 +96,90 @@ ListNode* Test(char* testName, ListNode* pHead1, ListNode* pHead2)
     return pMergedHead;
 }
 
-// list1: 1->3->5
-// list2: 2->4->6
-void Test1()
-{
-    ListNode* pNode1 = CreateListNode(1);
-    ListNode* pNode3 = CreateListNode(3);
-    ListNode* pNode5 = CreateListNode(5);
+	// list1: 1->3->5
+	// list2: 2->4->6
+	void Test1()
+	{
+		ListNode* pNode1 = CreateListNode(1);
+		ListNode* pNode3 = CreateListNode(3);
+		ListNode* pNode5 = CreateListNode(5);
 
-    ConnectListNodes(pNode1, pNode3);
-    ConnectListNodes(pNode3, pNode5);
+		ConnectListNodes(pNode1, pNode3);
+		ConnectListNodes(pNode3, pNode5);
 
-    ListNode* pNode2 = CreateListNode(2);
-    ListNode* pNode4 = CreateListNode(4);
-    ListNode* pNode6 = CreateListNode(6);
+		ListNode* pNode2 = CreateListNode(2);
+		ListNode* pNode4 = CreateListNode(4);
+		ListNode* pNode6 = CreateListNode(6);
 
-    ConnectListNodes(pNode2, pNode4);
-    ConnectListNodes(pNode4, pNode6);
+		ConnectListNodes(pNode2, pNode4);
+		ConnectListNodes(pNode4, pNode6);
 
-    ListNode* pMergedHead = Test("Test1", pNode1, pNode2);
+		ListNode* pMergedHead = Test("Test1", pNode1, pNode2);
 
-    DestroyList(pMergedHead);
-}
+		DestroyList(pMergedHead);
+	}
 
-// 两个链表中有重复的数字
-// list1: 1->3->5
-// list2: 1->3->5
-void Test2()
-{
-    ListNode* pNode1 = CreateListNode(1);
-    ListNode* pNode3 = CreateListNode(3);
-    ListNode* pNode5 = CreateListNode(5);
+	// 两个链表中有重复的数字
+	// list1: 1->3->5
+	// list2: 1->3->5
+	void Test2()
+	{
+		ListNode* pNode1 = CreateListNode(1);
+		ListNode* pNode3 = CreateListNode(3);
+		ListNode* pNode5 = CreateListNode(5);
 
-    ConnectListNodes(pNode1, pNode3);
-    ConnectListNodes(pNode3, pNode5);
+		ConnectListNodes(pNode1, pNode3);
+		ConnectListNodes(pNode3, pNode5);
 
-    ListNode* pNode2 = CreateListNode(1);
-    ListNode* pNode4 = CreateListNode(3);
-    ListNode* pNode6 = CreateListNode(5);
+		ListNode* pNode2 = CreateListNode(1);
+		ListNode* pNode4 = CreateListNode(3);
+		ListNode* pNode6 = CreateListNode(5);
 
-    ConnectListNodes(pNode2, pNode4);
-    ConnectListNodes(pNode4, pNode6);
+		ConnectListNodes(pNode2, pNode4);
+		ConnectListNodes(pNode4, pNode6);
 
-    ListNode* pMergedHead = Test("Test2", pNode1, pNode2);
+		ListNode* pMergedHead = Test("Test2", pNode1, pNode2);
 
-    DestroyList(pMergedHead);
-}
+		DestroyList(pMergedHead);
+	}
 
-// 两个链表都只有一个数字
-// list1: 1
-// list2: 2
-void Test3()
-{
-    ListNode* pNode1 = CreateListNode(1);
-    ListNode* pNode2 = CreateListNode(2);
+	// 两个链表都只有一个数字
+	// list1: 1
+	// list2: 2
+	void Test3()
+	{
+		ListNode* pNode1 = CreateListNode(1);
+		ListNode* pNode2 = CreateListNode(2);
 
-    ListNode* pMergedHead = Test("Test3", pNode1, pNode2);
+		ListNode* pMergedHead = Test("Test3", pNode1, pNode2);
 
-    DestroyList(pMergedHead);
-}
+		DestroyList(pMergedHead);
+	}
 
-// 一个链表为空链表
-// list1: 1->3->5
-// list2: 空链表
-void Test4()
-{
-    ListNode* pNode1 = CreateListNode(1);
-    ListNode* pNode3 = CreateListNode(3);
-    ListNode* pNode5 = CreateListNode(5);
+	// 一个链表为空链表
+	// list1: 1->3->5
+	// list2: 空链表
+	void Test4()
+	{
+		ListNode* pNode1 = CreateListNode(1);
+		ListNode* pNode3 = CreateListNode(3);
+		ListNode* pNode5 = CreateListNode(5);
 
-    ConnectListNodes(pNode1, pNode3);
-    ConnectListNodes(pNode3, pNode5);
+		ConnectListNodes(pNode1, pNode3);
+		ConnectListNodes(pNode3, pNode5);
 
-    ListNode* pMergedHead = Test("Test4", pNode1, nullptr);
+		ListNode* pMergedHead = Test("Test4", pNode1, nullptr);
 
-    DestroyList(pMergedHead);
-}
+		DestroyList(pMergedHead);
+	}
 
-// 两个链表都为空链表
-// list1: 空链表
-// list2: 空链表
-void Test5()
-{
-    ListNode* pMergedHead = Test("Test5", nullptr, nullptr);
-}
+	// 两个链表都为空链表
+	// list1: 空链表
+	// list2: 空链表
+	void Test5()
+	{
+		ListNode* pMergedHead = Test("Test5", nullptr, nullptr);
+	}
 
 int main(int argc, char* argv[])
 {
@@ -156,7 +188,7 @@ int main(int argc, char* argv[])
     Test3();
     Test4();
     Test5();
-
+	system("pause");
     return 0;
 }
 

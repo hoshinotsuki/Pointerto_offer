@@ -19,42 +19,109 @@ https://github.com/zhedahht/CodingInterviewChinese2/blob/master/LICENSE.txt)
 #include <cstdio>
 #include "..\Utilities\BinaryTree.h"
 #include <queue>
+#include <vector>
+#include <iostream>
+using namespace std;
 
-void Print(BinaryTreeNode* pRoot)
-{
-    if(pRoot == nullptr)
-        return;
+//void Print(BinaryTreeNode* pRoot)
+//{
+//    if(pRoot == nullptr)
+//        return;
+//
+//    std::queue<BinaryTreeNode*> nodes;
+//    nodes.push(pRoot);
+//    int nextLevel = 0;
+//    int toBePrinted = 1;
+//    while(!nodes.empty())
+//    {
+//        BinaryTreeNode* pNode = nodes.front();
+//        printf("%d ", pNode->m_nValue);
+//
+//        if(pNode->m_pLeft != nullptr)
+//        {
+//            nodes.push(pNode->m_pLeft);
+//            ++nextLevel;
+//        }
+//        if(pNode->m_pRight != nullptr)
+//        {
+//            nodes.push(pNode->m_pRight);
+//            ++nextLevel;
+//        }
+//
+//        nodes.pop();
+//        --toBePrinted;
+//        if(toBePrinted == 0)
+//        {
+//            printf("\n");
+//            toBePrinted = nextLevel;
+//            nextLevel = 0;
+//        }
+//    }
+//}
 
-    std::queue<BinaryTreeNode*> nodes;
-    nodes.push(pRoot);
-    int nextLevel = 0;
-    int toBePrinted = 1;
-    while(!nodes.empty())
-    {
-        BinaryTreeNode* pNode = nodes.front();
-        printf("%d ", pNode->m_nValue);
-
-        if(pNode->m_pLeft != nullptr)
-        {
-            nodes.push(pNode->m_pLeft);
-            ++nextLevel;
-        }
-        if(pNode->m_pRight != nullptr)
-        {
-            nodes.push(pNode->m_pRight);
-            ++nextLevel;
-        }
-
-        nodes.pop();
-        --toBePrinted;
-        if(toBePrinted == 0)
-        {
-            printf("\n");
-            toBePrinted = nextLevel;
-            nextLevel = 0;
-        }
-    }
+/*
+struct TreeNode {
+int val;
+struct TreeNode *left;
+struct TreeNode *right;
+TreeNode(int x) :
+val(x), left(NULL), right(NULL) {
 }
+};
+*/
+ 
+vector<vector<int>> Print(BinaryTreeNode* pRoot) {
+		//1.定义返回结果
+		vector<vector<int>> ret;
+		vector<int> subret;
+		//2.入口检查
+		if (!pRoot)
+			return ret;
+
+
+
+		//3.定义变量和队列
+		int toBePrinted = 1;//这一级还剩的节点数
+		int NextLevel = 0;//下一级的节点数
+		queue<BinaryTreeNode*> queueTree;
+		int level = 0;//当前的级数
+					  //4.放入根节点
+		queueTree.push(pRoot);
+
+		//5.循环
+		while (!queueTree.empty())
+		{
+			BinaryTreeNode* cur = queueTree.front();
+			subret.push_back(cur->m_nValue);
+			queueTree.pop();
+
+			//如果有左子节点
+			if (cur->m_pLeft)
+			{
+				queueTree.push(cur->m_pLeft);
+				NextLevel++;
+			}
+
+			//如果有右子节点
+			if (cur->m_pRight)
+			{
+				queueTree.push(cur->m_pRight);
+				NextLevel++;
+			}
+
+			toBePrinted--;
+			if (!toBePrinted)
+			{
+				level++;
+				toBePrinted = NextLevel;
+				NextLevel = 0;
+				ret.push_back(subret);
+				subret.clear();
+			}
+		}
+
+		return ret;
+	};
 
 // ====================测试代码====================
 //            8
@@ -81,7 +148,12 @@ void Test1()
     printf("5 7 9 11 \n\n");
 
     printf("Actual Result is: \n");
-    Print(pNode8);
+	vector<vector<int>> ret=Print(pNode8);
+	for (auto it = ret.begin(); it < ret.end(); it++)
+	{
+		for (auto i = 0; i  < (*it).size(); i ++)
+			cout << (*it)[i] << " ";
+	}
     printf("\n");
 
     DestroyTree(pNode8);

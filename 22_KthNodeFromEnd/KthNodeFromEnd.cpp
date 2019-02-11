@@ -19,36 +19,72 @@ https://github.com/zhedahht/CodingInterviewChinese2/blob/master/LICENSE.txt)
 // 值为4的结点。
 
 #include <cstdio>
+#include <stdlib.h>
 #include "..\Utilities\List.h"
+
+//ListNode* FindKthToTail(ListNode* pListHead, unsigned int k)
+//{
+//    if(pListHead == nullptr || k == 0)
+//        return nullptr;
+//
+//    ListNode *pAhead = pListHead;
+//    ListNode *pBehind = nullptr;
+//
+//    for(unsigned int i = 0; i < k - 1; ++ i)
+//    {
+//        if(pAhead->m_pNext != nullptr)
+//            pAhead = pAhead->m_pNext;
+//        else
+//        {
+//            return nullptr;
+//        }
+//    }
+//
+//    pBehind = pListHead;
+//    while(pAhead->m_pNext != nullptr)
+//    {
+//        pAhead = pAhead->m_pNext;
+//        pBehind = pBehind->m_pNext;
+//    }
+//
+//    return pBehind;
+//}
+
 
 ListNode* FindKthToTail(ListNode* pListHead, unsigned int k)
 {
-    if(pListHead == nullptr || k == 0)
-        return nullptr;
+	//1.鲁棒性检查，nullptr链表，k=0的情况，返回nullptr
+	if (pListHead == nullptr || k == 0)
+		return nullptr;
 
-    ListNode *pAhead = pListHead;
-    ListNode *pBehind = nullptr;
+	//2.定义双指针,第一个指向头节点，第二个指向nullptr
+	ListNode* first = pListHead;
+	ListNode* second = nullptr;
 
-    for(unsigned int i = 0; i < k - 1; ++ i)
-    {
-        if(pAhead->m_pNext != nullptr)
-            pAhead = pAhead->m_pNext;
-        else
-        {
-            return nullptr;
-        }
-    }
+		//3.第一个指针向前走k-1步
+		for (int i = 0; i < k-1; i++)
+		{		
+			//3.1如果k比链表节点大，返回nullptr
+			if (first->m_pNext == nullptr)
+				return nullptr;
+			//3.2 否则，向前走一步
+			else
+				first = first->m_pNext;
+		}
+	
+	//4.第二个指针开始走
+	second = pListHead;
 
-    pBehind = pListHead;
-    while(pAhead->m_pNext != nullptr)
-    {
-        pAhead = pAhead->m_pNext;
-        pBehind = pBehind->m_pNext;
-    }
+	//5.当第一个指针直到最后一个节点时，第二个指针指向倒数第k个节点
+	while (first->m_pNext!=nullptr)
+	{
+		first = first->m_pNext;
+		second = second->m_pNext;
+	}
 
-    return pBehind;
+	//6.返回第二个指针的值
+	return second;
 }
-
 // ====================测试代码====================
 // 测试要找的结点在链表中间
 void Test1()
@@ -177,7 +213,7 @@ int main(int argc, char* argv[])
     Test4();
     Test5();
     Test6();
-
+	system("pause");
     return 0;
 }
 

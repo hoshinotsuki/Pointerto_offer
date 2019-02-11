@@ -17,7 +17,7 @@ https://github.com/zhedahht/CodingInterviewChinese2/blob/master/LICENSE.txt)
 // 表示任意一个字符，而'*'表示它前面的字符可以出现任意次（含0次）。在本题
 // 中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"
 // 和"ab*ac*a"匹配，但与"aa.a"及"ab*a"均不匹配。
-
+#include <stdlib.h>
 #include <cstdio>
 
 bool matchCore(const char* str, const char* pattern);
@@ -29,33 +29,66 @@ bool match(const char* str, const char* pattern)
 
     return matchCore(str, pattern);
 }
-
+//
+//bool matchCore(const char* str, const char* pattern)
+//{
+//    if(*str == '\0' && *pattern == '\0')
+//        return true;
+//
+//    if(*str != '\0' && *pattern == '\0')
+//        return false;
+//
+//    if(*(pattern + 1) == '*')
+//    {
+//        if(*pattern == *str || (*pattern == '.' && *str != '\0'))
+//            // 进入有限状态机的下一个状态
+//            return matchCore(str + 1, pattern + 2)
+//            // 继续留在有限状态机的当前状态 
+//            || matchCore(str + 1, pattern)
+//            // 略过一个'*' 
+//            || matchCore(str, pattern + 2);
+//        else
+//            // 略过一个'*'
+//            return matchCore(str, pattern + 2);
+//    }
+//
+//    if(*str == *pattern || (*pattern == '.' && *str != '\0'))
+//        return matchCore(str + 1, pattern + 1);
+//
+//    return false;
+//}
 bool matchCore(const char* str, const char* pattern)
 {
-    if(*str == '\0' && *pattern == '\0')
-        return true;
+	//1.递归结束条件：模式和字符串都匹配到了结束,返回真
+	if (*str == '\0'&&*pattern == '\0')
+		return true;
+	//2.递归结束条件：如果模式先结束，字符串还没结束，返回假
+	if (*str != '\0'&&*pattern == '\0')
+		return false;
 
-    if(*str != '\0' && *pattern == '\0')
-        return false;
+	//3.先判断pattern 的下一个字符是否为 *, 如果是，则2种情况，4种匹配方法
+	if (*(pattern + 1) == '*')
+	{
+		//3.1 情况一：当*str与*pattern 匹配 时，有3种匹配方法
+		if (*str == *pattern || *pattern == '.'&&*str != '\0')
+			//3.1.1 无视 * ，*重复0次,进入下一机制 
+			return matchCore(str, pattern + 2) ||
+			//3.1.2 *重复1次,进入下一机制 
+			matchCore(str + 1, pattern + 2) ||
+			//3.1.3 *重复多次,留在这一机制 
+			matchCore(str + 1, pattern);
+		//3.2 情况二：当*str与*pattern 不匹配 时，无视 * ，*重复0次,进入下一机制 
+		else
+			return matchCore(str, pattern + 2);
 
-    if(*(pattern + 1) == '*')
-    {
-        if(*pattern == *str || (*pattern == '.' && *str != '\0'))
-            // 进入有限状态机的下一个状态
-            return matchCore(str + 1, pattern + 2)
-            // 继续留在有限状态机的当前状态 
-            || matchCore(str + 1, pattern)
-            // 略过一个'*' 
-            || matchCore(str, pattern + 2);
-        else
-            // 略过一个'*'
-            return matchCore(str, pattern + 2);
-    }
+	}
 
-    if(*str == *pattern || (*pattern == '.' && *str != '\0'))
-        return matchCore(str + 1, pattern + 1);
+	//4. 直接匹配，如果两个相等，就匹配下一个
+	else if (*str == *pattern || *pattern == '.'&&*str != '\0')
+		return matchCore(str+1,pattern+1);
 
-    return false;
+	//5. 如果两个字符不匹配，就返回假
+	return false;
 }
 
 // ====================测试代码====================
@@ -102,7 +135,7 @@ int main(int argc, char* argv[])
     Test("Test28", "aaba", "ab*a*c*a", false);
     Test("Test29", "bbbba", ".*a*a", true);
     Test("Test30", "bcbbabab", ".*a*a", false);
-
+	system("pause");
     return 0;
 }
 

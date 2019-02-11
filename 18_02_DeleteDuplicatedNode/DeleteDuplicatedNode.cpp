@@ -17,48 +17,125 @@ https://github.com/zhedahht/CodingInterviewChinese2/blob/master/LICENSE.txt)
 // 结点被删除之后，链表如图3.4（b）所示。
 
 #include <cstdio>
-#include "../Utilities/list.h"
+#include <stdlib.h>
+#include "../Utilities/list.h" 
 
-void DeleteDuplication(ListNode** pHead)
+//void DeleteDuplication(ListNode** pHead)
+//{
+//    if(pHead == nullptr || *pHead == nullptr)
+//        return;
+//
+//    ListNode* pPreNode = nullptr;
+//    ListNode* pNode = *pHead;
+//    while(pNode != nullptr)
+//    {
+//        ListNode *pNext = pNode->m_pNext;
+//        bool needDelete = false;
+//        if(pNext != nullptr && pNext->m_nValue == pNode->m_nValue)
+//            needDelete = true;
+//
+//        if(!needDelete)
+//        {
+//            pPreNode = pNode;
+//            pNode = pNode->m_pNext;
+//        }
+//        else
+//        {
+//            int value = pNode->m_nValue;
+//            ListNode* pToBeDel = pNode;
+//            while(pToBeDel != nullptr && pToBeDel->m_nValue == value)
+//            {
+//                pNext = pToBeDel->m_pNext;
+//
+//                delete pToBeDel;
+//                pToBeDel = nullptr;
+//
+//                pToBeDel = pNext;
+//            }
+//
+//            if(pPreNode == nullptr)
+//                *pHead = pNext;
+//            else
+//                pPreNode->m_pNext = pNext;
+//            pNode = pNext;
+//        }
+//    }
+//}
+
+//函数的参数:ListNode** pHead。
+//因为头节点可能重复，会被删除，所以不用ListNode* pHead
+void DeleteDuplication(ListNode** pHead) 
 {
-    if(pHead == nullptr || *pHead == nullptr)
-        return;
+	//1.如果是空链表或头节点为空，返回 
+	if (!pHead || !*pHead) 
+		return;
+	 
+	//2.ListNode* pNode:初始化指向当前头节点*pHead
+	ListNode* pNode = *pHead;
+	 
+	//3.ListNode* pPreNode:指向上个节点,初始化为空
+	ListNode* pPreNode = nullptr;
 
-    ListNode* pPreNode = nullptr;
-    ListNode* pNode = *pHead;
-    while(pNode != nullptr)
-    {
-        ListNode *pNext = pNode->m_pNext;
-        bool needDelete = false;
-        if(pNext != nullptr && pNext->m_nValue == pNode->m_nValue)
-            needDelete = true;
+	//4.循环遍历
+	while (pNode)
+	{
+		//4.1.新建一个节点pNext，指向下个节点
+		ListNode* pNext = pNode->m_pNext;
 
-        if(!needDelete)
-        {
-            pPreNode = pNode;
-            pNode = pNode->m_pNext;
-        }
-        else
-        {
-            int value = pNode->m_nValue;
-            ListNode* pToBeDel = pNode;
-            while(pToBeDel != nullptr && pToBeDel->m_nValue == value)
-            {
-                pNext = pToBeDel->m_pNext;
+		//4.2 设置标记：pNode节点是否需要删除
+		bool needDetele = false;
 
-                delete pToBeDel;
-                pToBeDel = nullptr;
+		//4.3 如果下个节点pNext不为空，且pNode节点值和下个节点pNext的值相同，pNode节点就需要删除
+		if (pNext!=nullptr && pNext->m_nValue == pNode->m_nValue)
+			needDetele = true;
+		   
+		//4.4 如果不需要删除，就遍历下一个
+		if (!needDetele)
+		{
+			//4.4.1 上个节点pPreNode设为当前节点pNode 
+			pPreNode = pNode;
 
-                pToBeDel = pNext;
-            }
+			//4.4.2 当前节点pNode设为下个节点pNext
+			pNode = pNext;
+		/*	pNode->m_nValue = pNext->m_nValue;
+			pNode->m_pNext = pNext->m_pNext;*/
+		}
+ 
+		//4.5 否则，开始删除
+		else
+		{
+			//4.5.1 记录pNode值
+			int value = pNode->m_nValue;
 
-            if(pPreNode == nullptr)
-                *pHead = pNext;
-            else
-                pPreNode->m_pNext = pNext;
-            pNode = pNext;
-        }
-    }
+			//4.5.2 定义要删除的节点变量toBeDeleted，初始化为该节点
+			ListNode* toBeDeleted = pNode; 
+	 
+			//4.5.3 循环遍历：如果toBeDeleted节点不为空，且等于下一个节点，就将toBeDeleted删除，
+			while (toBeDeleted&&value == toBeDeleted->m_nValue)
+			{
+				//4.5.3.1 pNext指向toBeDeleted下个节点
+				pNext = toBeDeleted->m_pNext;
+
+				//4.5.3.2 删除toBeDeleted节点
+				delete toBeDeleted;
+				toBeDeleted = nullptr;
+
+				//4.5.3.3 toBeDeleted节点赋值为下个节点pNext
+				toBeDeleted = pNext; 
+			} 
+
+			//4.5.4 如果删除的是头节点,即pPreNode为空，将头节点改为下个节点
+			if (!pPreNode)
+				*pHead = pNext;
+
+			//4.5.5 否则，将pPreNode的下个节点设置为下个节点pNext
+			else
+				pPreNode->m_pNext = pNext;
+
+			//4.5.6 当前节点pNode设为下个节点pNext
+			pNode = pNext;
+		}	
+	}
 }
 
 // ====================测试代码====================
@@ -311,5 +388,6 @@ int main(int argc, char* argv[])
     Test9();
     Test10();
 
+	system("pause");
     return 0;
 }

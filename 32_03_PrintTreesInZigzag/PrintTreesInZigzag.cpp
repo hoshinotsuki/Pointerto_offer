@@ -20,46 +20,114 @@ https://github.com/zhedahht/CodingInterviewChinese2/blob/master/LICENSE.txt)
 #include <cstdio>
 #include "..\Utilities\BinaryTree.h"
 #include <stack>
+#include <vector>
+#include <stdlib.h>
+#include <iostream>
+using namespace std;
 
-void Print(BinaryTreeNode* pRoot)
-{
-    if(pRoot == nullptr)
-        return;
 
-    std::stack<BinaryTreeNode*> levels[2];
-    int current = 0;
-    int next = 1;
+//
+//void Print(BinaryTreeNode* pRoot)
+//{
+//    if(pRoot == nullptr)
+//        return;
+//
+//    std::stack<BinaryTreeNode*> levels[2];
+//    int current = 0;
+//    int next = 1;
+//
+//    levels[current].push(pRoot);
+//    while(!levels[0].empty() || !levels[1].empty())
+//    {
+//        BinaryTreeNode* pNode = levels[current].top();
+//        levels[current].pop();
+//
+//        printf("%d ", pNode->m_nValue);
+//
+//        if(current == 0)
+//        {
+//            if(pNode->m_pLeft != nullptr)
+//                levels[next].push(pNode->m_pLeft);
+//            if(pNode->m_pRight != nullptr)
+//                levels[next].push(pNode->m_pRight);
+//        }
+//        else
+//        {
+//            if(pNode->m_pRight != nullptr)
+//                levels[next].push(pNode->m_pRight);
+//            if(pNode->m_pLeft != nullptr)
+//                levels[next].push(pNode->m_pLeft);
+//        }
+//
+//        if(levels[current].empty())
+//        {
+//            printf("\n");
+//            current = 1 - current;
+//            next = 1 - next;
+//        }
+//    }
+//}
 
-    levels[current].push(pRoot);
-    while(!levels[0].empty() || !levels[1].empty())
-    {
-        BinaryTreeNode* pNode = levels[current].top();
-        levels[current].pop();
+vector<vector<int>> Print(BinaryTreeNode* pRoot) {
+	//定义容器
+	vector<int> subret;
+	vector<vector<int>> ret;
 
-        printf("%d ", pNode->m_nValue);
+	//1.入口检查
+	if (!pRoot)
+		return ret;
 
-        if(current == 0)
-        {
-            if(pNode->m_pLeft != nullptr)
-                levels[next].push(pNode->m_pLeft);
-            if(pNode->m_pRight != nullptr)
-                levels[next].push(pNode->m_pRight);
-        }
-        else
-        {
-            if(pNode->m_pRight != nullptr)
-                levels[next].push(pNode->m_pRight);
-            if(pNode->m_pLeft != nullptr)
-                levels[next].push(pNode->m_pLeft);
-        }
+	int cur = 0;
+	int next = 1;
 
-        if(levels[current].empty())
-        {
-            printf("\n");
-            current = 1 - current;
-            next = 1 - next;
-        }
-    }
+
+	//level[0]奇数级节点的栈，从左至右存储,level[1]偶数级节点的栈，从右至左存储,
+	stack<BinaryTreeNode*> level[2];
+	//level[0]:stack1,level[1]:stack2
+
+	//将根节点放入ret中
+	subret.push_back(pRoot->m_nValue);
+	ret.push_back(subret);
+	subret.clear();
+
+	//将1级的子节点放入level[0]栈中,奇数级的子节点
+	level[0].push(pRoot->m_pLeft);
+	level[0].push(pRoot->m_pRight);
+
+	while (!level[0].empty() || !level[1].empty())
+	{
+		while (!level[cur].empty())
+		{
+			BinaryTreeNode* curNode = level[cur].top();
+			subret.push_back(curNode->m_nValue);
+			level[cur].pop();
+			if (cur == 0)//
+			{
+				if (curNode->m_pRight)
+					level[next].push(curNode->m_pRight);
+
+				if (curNode->m_pLeft)
+					level[next].push(curNode->m_pLeft);
+			}
+			else
+			{
+				if (curNode->m_pLeft) 
+					level[next].push(curNode->m_pLeft);
+
+				if (curNode->m_pRight)
+					level[next].push(curNode->m_pRight);
+
+			}
+		}
+		if (level[cur].empty())
+		{
+			cur = 1 -cur;
+			next = 1 - next;
+			ret.push_back(subret);
+			subret.clear();
+		}
+	} 
+	return ret;
 }
 
 // ====================测试代码====================
@@ -87,7 +155,15 @@ void Test1()
     printf("5 7 9 11 \n\n");
 
     printf("Actual Result is: \n");
-    Print(pNode8);
+    //Print(pNode8);
+	vector<vector<int>> ret = Print(pNode8);
+
+	for (auto it = ret.begin(); it < ret.end(); it++)
+	{
+		for (int i = 0; i < (*it).size(); i++)
+			cout<<(*it)[i];
+	}
+
     printf("\n");
 
     DestroyTree(pNode8);
@@ -248,12 +324,12 @@ void Test7()
 int main(int argc, char* argv[])
 {
     Test1();
-    Test2();
+ /*   Test2();
     Test3();
     Test4();
     Test5();
     Test6();
-    Test7();
+    Test7();*/
 
     return 0;
 }

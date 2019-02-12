@@ -19,54 +19,108 @@ https://github.com/zhedahht/CodingInterviewChinese2/blob/master/LICENSE.txt)
 #include <cstdio>
 #include "..\Utilities\BinaryTree.h"
 #include <vector>
+#include <stack>
+using namespace std;
 
 void FindPath(BinaryTreeNode* pRoot, int expectedSum, std::vector<int>& path, int& currentSum);
 
-void FindPath(BinaryTreeNode* pRoot, int expectedSum)
-{
-    if(pRoot == nullptr)
-        return;
+//void FindPath(BinaryTreeNode* pRoot, int expectedSum)
+//{
+//    if(pRoot == nullptr)
+//        return;
+//
+//    std::vector<int> path;
+//    int currentSum = 0;
+//    FindPath(pRoot, expectedSum, path, currentSum);
+//}
+//
+//void FindPath
+//(
+//    BinaryTreeNode*   pRoot,        
+//    int               expectedSum,  
+//    std::vector<int>& path,         
+//    int&              currentSum
+//)
+//{
+//    currentSum += pRoot->m_nValue;
+//    path.push_back(pRoot->m_nValue);
+//
+//    // 如果是叶结点，并且路径上结点的和等于输入的值
+//    // 打印出这条路径
+//    bool isLeaf = pRoot->m_pLeft == nullptr && pRoot->m_pRight == nullptr;
+//    if(currentSum == expectedSum && isLeaf)
+//    {
+//        printf("A path is found: ");
+//        std::vector<int>::iterator iter = path.begin();
+//        for(; iter != path.end(); ++ iter)
+//            printf("%d\t", *iter);
+//        
+//        printf("\n");
+//    }
+//
+//    // 如果不是叶结点，则遍历它的子结点
+//    if(pRoot->m_pLeft != nullptr)
+//        FindPath(pRoot->m_pLeft, expectedSum, path, currentSum);
+//    if(pRoot->m_pRight != nullptr)
+//        FindPath(pRoot->m_pRight, expectedSum, path, currentSum);
+//
+//    // 在返回到父结点之前，在路径上删除当前结点，
+//    // 并在currentSum中减去当前结点的值
+//    currentSum -= pRoot->m_nValue;
+//    path.pop_back();
+//} 
 
-    std::vector<int> path;
-    int currentSum = 0;
-    FindPath(pRoot, expectedSum, path, currentSum);
+bool hasPathSum(BinaryTreeNode* root, int sum);
+bool FindPath(BinaryTreeNode* root, int sum, stack<int> &path, int cur);
+
+bool hasPathSum(BinaryTreeNode* root, int sum) {
+	// 入口检查
+	if (!root)
+		return false;
+
+	std::stack<int> path;
+	int cur = 0;
+	return FindPath(root, sum, path, cur);
 }
 
-void FindPath
-(
-    BinaryTreeNode*   pRoot,        
-    int               expectedSum,  
-    std::vector<int>& path,         
-    int&              currentSum
-)
+
+bool FindPath(BinaryTreeNode* root, int sum, stack<int> &path, int cur)
 {
-    currentSum += pRoot->m_nValue;
-    path.push_back(pRoot->m_nValue);
+	// 局部变量
+	bool ret = false;
 
-    // 如果是叶结点，并且路径上结点的和等于输入的值
-    // 打印出这条路径
-    bool isLeaf = pRoot->m_pLeft == nullptr && pRoot->m_pRight == nullptr;
-    if(currentSum == expectedSum && isLeaf)
-    {
-        printf("A path is found: ");
-        std::vector<int>::iterator iter = path.begin();
-        for(; iter != path.end(); ++ iter)
-            printf("%d\t", *iter);
-        
-        printf("\n");
-    }
+	// 1.将当前节点加入路径栈中，并更新当前路径的和
+	path.push(root->m_nValue);
+	cur += root->m_nValue;
 
-    // 如果不是叶结点，则遍历它的子结点
-    if(pRoot->m_pLeft != nullptr)
-        FindPath(pRoot->m_pLeft, expectedSum, path, currentSum);
-    if(pRoot->m_pRight != nullptr)
-        FindPath(pRoot->m_pRight, expectedSum, path, currentSum);
+	// 2.判断是否是叶子节点
+	bool leaf = root->m_pLeft == nullptr && root->m_pRight == nullptr;
 
-    // 在返回到父结点之前，在路径上删除当前结点，
-    // 并在currentSum中减去当前结点的值
-    currentSum -= pRoot->m_nValue;
-    path.pop_back();
-} 
+	// 3.如果是叶子节点，并且路径上节点值等于目标和，说明存在
+	if (leaf && sum == cur)
+	{
+		return true;
+	}
+
+	// 4.如果不是叶子节点，找到他的叶子节点
+	if (root->m_pLeft)
+		ret = FindPath(root->m_pLeft, sum, path, cur);
+
+	if (ret)
+		return ret;
+
+	if (root->m_pRight)
+		ret = FindPath(root->m_pRight, sum, path, cur);
+
+	if (ret)
+		return ret;
+
+	// 5.在退出递归之前，将路径最后一个数清空，将当前值更新
+	path.pop();
+	cur -= root->m_nValue;
+
+	return ret;
+}
 
 // ====================测试代码====================
 void Test(char* testName, BinaryTreeNode* pRoot, int expectedSum)
@@ -74,7 +128,9 @@ void Test(char* testName, BinaryTreeNode* pRoot, int expectedSum)
     if(testName != nullptr)
         printf("%s begins:\n", testName);
 
-    FindPath(pRoot, expectedSum);
+     //FindPath(pRoot, expectedSum);
+	bool ret = hasPathSum(pRoot, expectedSum);
+	printf("%d",ret);
 
     printf("\n");
 }

@@ -1,0 +1,71 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+        //局部变量
+        std::stack<TreeNode*> stack1;
+        std::stack<TreeNode*> stack2;
+        vector<vector<int>> ret;
+        vector<int> temp;
+        
+        //鲁棒性检查
+        if(!root)
+            return ret;
+        
+        //栈1中放入根节点
+        stack1.push(root);
+ 
+        //如果两个栈中还有节点
+        while(!stack1.empty()||!stack2.empty())
+        {
+            //栈2是空的就打印栈1
+            if(stack2.empty())
+            {
+                while(!stack1.empty())
+                {
+                    ///记录当前node,temp，pop
+                    TreeNode* cur=stack1.top();
+                    temp.push_back(cur->val);
+                    stack1.pop();
+                    //注意左右顺序
+                    if(cur->left)
+                        stack2.push(cur->left);
+                    if(cur->right)
+                        stack2.push(cur->right);                    
+                }
+                //栈1打印完，push temp容器，清空temp，
+                //开始打印栈2，操作和上面一样，只是左右顺序不同
+                ret.push_back(temp);
+                temp.clear();
+            }
+            else
+            {
+                if(stack1.empty())
+                {
+                    while(!stack2.empty())
+                    {
+                        TreeNode* cur=stack2.top();
+                        temp.push_back(cur->val);
+                        stack2.pop();                        
+                        if(cur->right)
+                            stack1.push(cur->right);  
+                        if(cur->left)
+                            stack1.push(cur->left);
+                    }
+                    ret.push_back(temp);
+                    temp.clear();
+                }
+            }
+        }
+            
+        return ret;
+    }
+};
